@@ -425,8 +425,12 @@ void T5Decoding<T>::forward(std::unordered_map<std::string, Tensor>*       outpu
                                      vocab_size_padded_,
                                      stream_);
         sync_check_cuda_error();
-        FT_CHECK(decoding_weights->post_decoder_embedding.bias != nullptr);
-        cudaD2Dcpy(padded_post_decoder_embedding_bias_, decoding_weights->post_decoder_embedding.bias, vocab_size_);
+
+	if (decoding_weights->post_decoder_embedding.bias != nullptr) {
+	    cudaD2Dcpy(padded_post_decoder_embedding_bias_, decoding_weights->post_decoder_embedding.bias, vocab_size_);
+	}
+        //FT_CHECK(decoding_weights->post_decoder_embedding.bias != nullptr);
+        //cudaD2Dcpy(padded_post_decoder_embedding_bias_, decoding_weights->post_decoder_embedding.bias, vocab_size_);
     }
 
     const std::vector<size_t> self_k_cache_shape = {num_layer_ / pipeline_para_.world_size_,
